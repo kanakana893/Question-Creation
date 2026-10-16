@@ -1,22 +1,27 @@
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>問題作成・学習アプリ 仕様書</title>
-    <!-- Tailwind CSS CDN -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>問題作成・学習アプリ 統合仕様書・要件定義書</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
+        .markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        @media (max-width: 767px) { .markdown-body { padding: 15px; } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
-
+    <div class="container-lg px-3 my-5 markdown-body">
+      
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 shadow-sm py-8 px-4 sm:px-8 mb-8">
+    <header class="bg-white border-b border-slate-200 shadow-sm py-8 px-4 sm:px-8 mb-8 rounded-xl">
         <div class="max-w-4xl mx-auto">
-            <h1 class="text-3xl font-bold text-slate-900 mb-2">問題作成・学習アプリ 仕様書</h1>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">問題作成・学習アプリ 統合仕様書・要件定義書</h1>
             <div class="flex flex-wrap gap-4 text-sm text-slate-600">
                 <span class="bg-slate-100 px-3 py-1 rounded-full">アプリ形態：デスクトップアプリ（案）</span>
                 <span class="bg-slate-100 px-3 py-1 rounded-full">対象OS：Windows 10 / 11（案）</span>
@@ -33,8 +38,16 @@
                 <span class="text-indigo-600">1.</span> アプリ概要・目的
             </h2>
             <p class="text-slate-700 leading-relaxed">
-                ユーザーが独自の問題やデッキ（問題集）を作成・管理し、間隔反復（スペースド・レピティション）を用いた効率的な学習と、学習意欲を極限まで高める演出（ドパガキ用演出）によって、継続的な学習と記憶定着をサポートするアプリケーション。
+                ユーザーが独自の問題やデッキ（問題集）を作成・管理し、間隔反復（スペースド・レピティション）を用いた効率的な学習と、学習意欲を極限まで高める演出（ドパガキ用演出・実績機能）によって、継続的な学習と記憶定着をサポートするアプリケーション。
             </p>
+            
+            <div class="mt-6 p-4 bg-indigo-50/50 rounded-lg border border-indigo-100">
+                <h3 class="font-bold text-indigo-900 mb-2">想定ターゲット層</h3>
+                <ul class="list-disc list-inside space-y-2 text-slate-700 text-sm">
+                    <li><strong>メインターゲット（一般家庭）：</strong>個人学習者、資格勉強をする社会人、子供の学習をサポートする保護者など。</li>
+                    <li><strong>将来的な展開目標（学校法人）：</strong>教師が一括でデッキを作成し、生徒に配布・学習進捗を管理できる教育機関向けライセンス展開も視野に入れる。</li>
+                </ul>
+            </div>
         </section>
 
         <!-- 2. 機能一覧 -->
@@ -43,7 +56,7 @@
                 <span class="text-indigo-600">2.</span> 機能一覧
             </h2>
 
-            <!-- 2.1 -->
+            <!-- 2.1 問題・デッキの管理 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.1 問題・デッキの管理</h3>
                 <div class="overflow-x-auto">
@@ -59,6 +72,10 @@
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">デッキ管理</td>
                                 <td class="py-3 px-4">デッキ（問題集）を作成・編集・削除する。デッキ名や説明を設定する。指定したデッキ内の問題一覧を表示する。</td>
                             </tr>
+                            <tr class="bg-indigo-50/30">
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">AI問題自動生成</td>
+                                <td class="py-3 px-4 text-indigo-900">ユーザーが教材やノートの画像を読み込ませると、AIが画像内のテキストや文脈を解析し、自動的に問題文・解答・選択肢などを生成する。（※生成後の手動微調整も可能）</td>
+                            </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">問題管理</td>
                                 <td class="py-3 px-4">問題を作成・編集・削除する。問題をデッキに追加・移動する。問題文と解答を登録する。</td>
@@ -69,14 +86,14 @@
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">検索</td>
-                                <td class="py-3 px-4">問題をキーワードで検索する。</td>
+                                <td class="py-3 px-4">問題をキーワードで横断的に検索する。</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- 2.2 -->
+            <!-- 2.2 問題形式 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.2 問題形式</h3>
                 <div class="overflow-x-auto">
@@ -113,7 +130,7 @@
                 </div>
             </div>
 
-            <!-- 2.3 -->
+            <!-- 2.3 学習 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.3 学習</h3>
                 <div class="overflow-x-auto">
@@ -146,7 +163,7 @@
                 </div>
             </div>
 
-            <!-- 2.4 -->
+            <!-- 2.4 復習・記憶状況の管理 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.4 復習・記憶状況の管理</h3>
                 <div class="overflow-x-auto">
@@ -160,7 +177,7 @@
                         <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">スケジュール管理</td>
-                                <td class="py-3 px-4">評価に応じて次回の復習日時を設定する。復習時期になった問題を一覧表示し、まとめて学習する。</td>
+                                <td class="py-3 px-4">評価に応じて次回の復習日時を設定する（スペースド・レピティション）。復習時期になった問題を一覧表示し、まとめて学習する。</td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ステータス・履歴</td>
@@ -175,7 +192,7 @@
                 </div>
             </div>
 
-            <!-- 2.5 -->
+            <!-- 2.5 学習履歴・進捗 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.5 学習履歴・進捗</h3>
                 <div class="overflow-x-auto">
@@ -200,7 +217,7 @@
                 </div>
             </div>
 
-            <!-- 2.6 -->
+            <!-- 2.6 デッキの共有 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.6 デッキの共有</h3>
                 <div class="overflow-x-auto">
@@ -225,7 +242,7 @@
                 </div>
             </div>
 
-            <!-- 2.7 -->
+            <!-- 2.7 データ管理 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.7 データ管理</h3>
                 <div class="overflow-x-auto">
@@ -237,6 +254,10 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr class="bg-indigo-50/30">
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">画像・メディアの保存方式</td>
+                                <td class="py-3 px-4 text-indigo-900">DBの肥大化と動作の重化を防ぐため、メディアファイルはデータベース内に直接保存（BLOB保存）しない。画像はアプリ固有のローカルフォルダ（例: <code>app_data/images/</code>）に保存し、データベースにはそのファイルの「パス（場所）」のみをテキストとして格納する。</td>
+                            </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">保存・バックアップ</td>
                                 <td class="py-3 px-4">学習データをPC内に保存する。学習データのバックアップをファイルに保存し、復元する。</td>
@@ -250,7 +271,7 @@
                 </div>
             </div>
 
-            <!-- 2.8 -->
+            <!-- 2.8 設定 -->
             <div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">2.8 設定</h3>
                 <div class="overflow-x-auto">
@@ -279,25 +300,28 @@
                 </div>
             </div>
 
-            <!-- 2.9 -->
+            <!-- 2.9 ドパガキ用演出・実績機能 -->
             <div>
-                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.9 ドパガキ用演出</h3>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.9 ドパガキ用演出・実績機能（学習意欲向上）</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 text-sm">
-                                <th class="py-3 px-4 font-semibold rounded-l-lg">演出名</th>
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">演出・機能名</th>
                                 <th class="py-3 px-4 font-semibold rounded-r-lg">概要</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ドーパミン促進演出</td>
-                                <td class="py-3 px-4">ドーパミンがでる演出を作る(重要！！)</td>
+                                <td class="py-3 px-4">正解時や「簡単」評価時に、紙吹雪やサウンドエフェクトなど、ドーパミンが出るような爽快な演出を行う（学習継続の最重要要素）。</td>
                             </tr>
-                            <tr>
-                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">実績達成通知</td>
-                                <td class="py-3 px-4">実績達成時の通知を行う。</td>
+                            <tr class="bg-indigo-50/30">
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">
+                                    実績・バッジ機能<br>
+                                    <span class="text-[10px] font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-full mt-1 inline-block">UPDATE</span>
+                                </td>
+                                <td class="py-3 px-4 text-indigo-900">「7日間連続学習」「累計100問正解」「1つのデッキをマスター」などの条件を満たした際に実績（バッジ）を解除し、豪華なエフェクトと共に通知する。ゲーミフィケーション要素を取り入れ、ユーザーの達成感と学習意欲を持続させる。</td>
                             </tr>
                         </tbody>
                     </table>
@@ -312,7 +336,7 @@
                 <span class="text-indigo-600">3.</span> 利用の流れ
             </h2>
             <ol class="space-y-3 text-slate-700 text-sm list-decimal list-inside leading-relaxed">
-                <li class="pl-2"><strong>問題・デッキを作成</strong>：デッキ名や説明を設定し、問題文・解答・画像・参考URLを登録してデッキを構築する。</li>
+                <li class="pl-2"><strong>問題・デッキを作成</strong>：デッキ名や説明を設定し、手動入力またはAI自動生成（画像読み込み）によって問題文・解答・選択肢・画像を登録する。</li>
                 <li class="pl-2"><strong>学習の開始</strong>：学習したいデッキや「未学習の問題」を選択し、学習セッションを開始する。</li>
                 <li class="pl-2"><strong>解答と自己評価</strong>：問題を1問ずつ解き、解答を確認したうえで「もう一度・難しい・普通・簡単」の4段階で評価する。</li>
                 <li class="pl-2"><strong>復習・進捗管理</strong>：評価に基づき自動設定された復習スケジュールに従って定期的に復習を行い、学習履歴や進捗状況を確認する。</li>
@@ -343,19 +367,19 @@
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">デッキ詳細・問題一覧</td>
-                                <td class="py-3 px-4">選択したデッキ内の問題一覧表示、問題の追加・編集・削除。</td>
+                                <td class="py-3 px-4">選択したデッキ内の問題一覧表示、問題の追加・編集・削除、AI問題自動生成の呼び出し。</td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">問題作成・編集</td>
-                                <td class="py-3 px-4">問題文、解答、画像添付、参考URLの入力・編集。</td>
+                                <td class="py-3 px-4">問題文、解答、画像添付、参考URLの入力・編集（AI生成後の微調整もここで行う）。</td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">学習画面</td>
-                                <td class="py-3 px-4">問題の表示（解答非表示）、解答オープン、自己評価、前後の問題への移動、途中終了。</td>
+                                <td class="py-3 px-4">問題の表示（解答非表示）、解答オープン、自己評価、前後の問題への移動、途中終了、爽快感のある演出。</td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">復習・進捗画面</td>
-                                <td class="py-3 px-4">復習期限到来問題の一覧、学習履歴・進捗データの確認。</td>
+                                <td class="py-3 px-4">復習期限到来問題の一覧、学習履歴・実績（バッジ）データの確認。</td>
                             </tr>
                             <tr>
                                 <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">設定画面</td>
@@ -370,35 +394,42 @@
                 <h3 class="text-lg font-semibold text-slate-800 mb-3">4.2 画面遷移の案</h3>
                 <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 font-mono text-sm text-slate-700">
                     ホーム／デッキ一覧<br>
-                    &nbsp;&nbsp;├── デッキ詳細・問題一覧 ── 問題作成・編集<br>
+                    &nbsp;&nbsp;├── デッキ詳細・問題一覧 ── 問題作成・編集（手動 / AI自動生成）<br>
                     &nbsp;&nbsp;├── 学習画面<br>
-                    &nbsp;&nbsp;├── 復習・進捗画面<br>
+                    &nbsp;&nbsp;├── 復習・進捗画面（実績・バッジ確認）<br>
                     &nbsp;&nbsp;└── 設定画面
                 </div>
             </div>
         </section>
 
         <!-- 5. 開発方針・追加機能の検討 -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-4">
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
             <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
                 <span class="text-indigo-600">5.</span> 開発方針・追加機能の検討
             </h2>
-            <div class="space-y-4 text-slate-700 text-sm leading-relaxed">
+            <div class="space-y-6 text-slate-700 text-sm leading-relaxed">
                 <div>
                     <h3 class="font-semibold text-slate-800 mb-2">5.1 基本機能と開発の優先順位</h3>
                     <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
                         <li>デッキ・問題の管理機能（作成、編集、削除、検索）</li>
                         <li>基本的な問題形式（一問一答、選択肢、文字入力）</li>
+                        <li>AIによる問題自動生成機能（API連携とUI構築）</li>
                         <li>基礎的な学習機能（解答確認・自己評価・進捗保存）</li>
-                        <li>データ管理・復習スケジュール管理</li>
+                        <li>データ管理（ローカルパスによる画像保存方式・バックアップ）と復習スケジュール管理</li>
                     </ul>
-                    <p class="mt-2 text-slate-600">まずは上記のような中核となる基本機能を確実に実装し、安定稼働させることを最優先とする。</p>
                 </div>
                 <div>
                     <h3 class="font-semibold text-slate-800 mb-2">5.2 演出および拡張機能の扱い</h3>
                     <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
-                        <li><strong>ドパガキ用演出（最重要）</strong>：ユーザーの学習継続意欲を大きく左右するため、基本機能と並行して早期段階から爽快感のある演出やエフェクトを実装・調整する。</li>
+                        <li><strong>ドパガキ用演出・実績機能（最重要）</strong>：ユーザーの学習継続意欲を大きく左右するため、基本機能と並行して早期段階から爽快感のある演出や、実績解除（トロフィー・バッジ等）によるゲーミフィケーションの仕組みを実装する。</li>
                         <li><strong>デッキ共有・検証機能</strong>：ユーザー間でのコンテンツ共有を円滑にするため、不正ファイルのブロック機能を含めて堅牢に実装する。</li>
+                    </ul>
+                </div>
+                <div class="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
+                    <h3 class="font-semibold text-indigo-900 mb-2">5.3 今後の拡張・法人向け対応の検討</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li><strong>学校法人向け展開の準備：</strong>一般家庭向けで動作と学習効果を検証・成熟させたのち、学校法人向け展開を想定したアーキテクチャへの移行を考慮しておく。</li>
+                        <li><strong>将来の機能拡張：</strong>「管理者（教師）によるデッキの一斉配信機能」や「生徒の学習履歴のサーバー集約・ダッシュボード化」などの機能拡張ができるよう、データのエクスポートや外部API連携がしやすいローカルDB構造にしておく。</li>
                     </ul>
                 </div>
             </div>
@@ -408,8 +439,8 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        問題作成・学習アプリ 仕様書（作成中・機能や技術は今後変更する場合があります）
+        問題作成・学習アプリ 統合仕様書・要件定義書（最終版）
     </footer>
-
+    </div>
 </body>
 </html>
