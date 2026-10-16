@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問題作成・学習アプリ 仕様書</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 shadow-sm py-8 px-4 sm:px-8 mb-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">問題作成・学習アプリ 仕様書</h1>
+            <div class="flex flex-wrap gap-4 text-sm text-slate-600">
+                <span class="bg-slate-100 px-3 py-1 rounded-full">アプリ形態：デスクトップアプリ（案）</span>
+                <span class="bg-slate-100 px-3 py-1 rounded-full">対象OS：Windows 10 / 11（案）</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-8 flex-grow w-full space-y-10 pb-16">
+
+        <!-- 1. アプリ概要・目的 -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+            <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                <span class="text-indigo-600">1.</span> アプリ概要・目的
+            </h2>
+            <p class="text-slate-700 leading-relaxed">
+                ユーザーが独自の問題やデッキ（問題集）を作成・管理し、間隔反復（スペースド・レピティション）を用いた効率的な学習と、学習意欲を極限まで高める演出（ドパガキ用演出）によって、継続的な学習と記憶定着をサポートするアプリケーション。
+            </p>
+        </section>
+
+        <!-- 2. 機能一覧 -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-8">
+            <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                <span class="text-indigo-600">2.</span> 機能一覧
+            </h2>
+
+            <!-- 2.1 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.1 問題・デッキの管理</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">機能名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">機能概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">デッキ管理</td>
+                                <td class="py-3 px-4">デッキ（問題集）を作成・編集・削除する。デッキ名や説明を設定する。指定したデッキ内の問題一覧を表示する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">問題管理</td>
+                                <td class="py-3 px-4">問題を作成・編集・削除する。問題をデッキに追加・移動する。問題文と解答を登録する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">メディア・リンク</td>
+                                <td class="py-3 px-4">問題に画像を添付する。問題に参考URLを登録し、クリックして開けるようにする。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">検索</td>
+                                <td class="py-3 px-4">問題をキーワードで検索する。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.2 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.2 問題形式</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">形式名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">一問一答形式</td>
+                                <td class="py-3 px-4">問題文と解答によるシンプルな確認形式。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">画像付き問題</td>
+                                <td class="py-3 px-4">画像を視覚情報として伴う問題。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">択一選択問題</td>
+                                <td class="py-3 px-4">複数の選択肢から1つ選ぶ問題。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">複数選択問題</td>
+                                <td class="py-3 px-4">複数の選択肢から該当するものを複数選ぶ問題。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">文字入力解答</td>
+                                <td class="py-3 px-4">文字入力で解答する問題。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.3 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.3 学習</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">機能名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">機能概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">学習の開始・フロー</td>
+                                <td class="py-3 px-4">デッキを選んで学習を開始する。問題を1問ずつ表示する。解答を隠した状態で問題を表示し、操作して解答を確認する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">自己評価</td>
+                                <td class="py-3 px-4">解答を確認したあと、自分の覚え具合を「もう一度・難しい・普通・簡単」から評価する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ナビゲーション</td>
+                                <td class="py-3 px-4">学習中に前の問題へ戻る、または次の問題へ進む。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">進捗保存・絞り込み</td>
+                                <td class="py-3 px-4">学習を途中で終了し、進捗を保存する。未学習の問題だけ、または指定したデッキの全問題を学習する。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.4 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.4 復習・記憶状況の管理</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">機能名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">機能概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">スケジュール管理</td>
+                                <td class="py-3 px-4">評価に応じて次回の復習日時を設定する。復習時期になった問題を一覧表示し、まとめて学習する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ステータス・履歴</td>
+                                <td class="py-3 px-4">問題ごとの次回復習日時と学習状態を表示する。過去の学習履歴を確認する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">設定変更</td>
+                                <td class="py-3 px-4">復習間隔の初期値を設定画面から変更する。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.5 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.5 学習履歴・進捗</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">機能名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">機能概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">進捗表示</td>
+                                <td class="py-3 px-4">学習した問題数を表示する。デッキごとの学習状況を表示する。未学習・復習待ち・復習期限到来などの状態を確認する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ログ記録</td>
+                                <td class="py-3 px-4">学習した日時と問題ごとの評価を記録する。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.6 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.6 デッキの共有</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">機能名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">機能概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">エクスポート・インポート</td>
+                                <td class="py-3 px-4">デッキをファイルに書き出し、別の環境で読み込む。画像など、問題に添付した素材もデッキファイルに含める。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">検証機能</td>
+                                <td class="py-3 px-4">読み込み前にファイルの内容を検証し、不正なファイルは取り込まない。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.7 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.7 データ管理</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">機能名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">機能概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">保存・バックアップ</td>
+                                <td class="py-3 px-4">学習データをPC内に保存する。学習データのバックアップをファイルに保存し、復元する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">データ初期化</td>
+                                <td class="py-3 px-4">すべての学習データを削除する前に確認を表示する。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.8 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.8 設定</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">設定項目</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">復習設定</td>
+                                <td class="py-3 px-4">復習間隔を設定する。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">出題順序</td>
+                                <td class="py-3 px-4">学習時に表示する問題の順番を設定する（登録順・ランダム）。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">データ操作</td>
+                                <td class="py-3 px-4">学習履歴やデータ管理に関する操作を行う。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2.9 -->
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">2.9 ドパガキ用演出</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">演出名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">概要</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ドーパミン促進演出</td>
+                                <td class="py-3 px-4">ドーパミンがでる演出を作る(重要！！)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">実績達成通知</td>
+                                <td class="py-3 px-4">実績達成時の通知を行う。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 3. 利用の流れ -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+            <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                <span class="text-indigo-600">3.</span> 利用の流れ
+            </h2>
+            <ol class="space-y-3 text-slate-700 text-sm list-decimal list-inside leading-relaxed">
+                <li class="pl-2"><strong>問題・デッキを作成</strong>：デッキ名や説明を設定し、問題文・解答・画像・参考URLを登録してデッキを構築する。</li>
+                <li class="pl-2"><strong>学習の開始</strong>：学習したいデッキや「未学習の問題」を選択し、学習セッションを開始する。</li>
+                <li class="pl-2"><strong>解答と自己評価</strong>：問題を1問ずつ解き、解答を確認したうえで「もう一度・難しい・普通・簡単」の4段階で評価する。</li>
+                <li class="pl-2"><strong>復習・進捗管理</strong>：評価に基づき自動設定された復習スケジュールに従って定期的に復習を行い、学習履歴や進捗状況を確認する。</li>
+                <li class="pl-2"><strong>データの共有・バックアップ</strong>：必要に応じてデッキをファイルに書き出して共有したり、PC内データのバックアップ・復元を行う。</li>
+            </ol>
+        </section>
+
+        <!-- 4. 画面レイアウト構成案・画面遷移 -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+            <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                <span class="text-indigo-600">4.</span> 画面レイアウト構成案・画面遷移
+            </h2>
+            
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">4.1 想定する画面</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm">
+                                <th class="py-3 px-4 font-semibold rounded-l-lg">画面名</th>
+                                <th class="py-3 px-4 font-semibold rounded-r-lg">主な内容・操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">ホーム／デッキ一覧</td>
+                                <td class="py-3 px-4">デッキの一覧表示、新規作成、学習開始、共有ファイル読み込みへの導線。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">デッキ詳細・問題一覧</td>
+                                <td class="py-3 px-4">選択したデッキ内の問題一覧表示、問題の追加・編集・削除。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">問題作成・編集</td>
+                                <td class="py-3 px-4">問題文、解答、画像添付、参考URLの入力・編集。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">学習画面</td>
+                                <td class="py-3 px-4">問題の表示（解答非表示）、解答オープン、自己評価、前後の問題への移動、途中終了。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">復習・進捗画面</td>
+                                <td class="py-3 px-4">復習期限到来問題の一覧、学習履歴・進捗データの確認。</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-medium text-slate-800 align-top whitespace-nowrap">設定画面</td>
+                                <td class="py-3 px-4">復習間隔の変更、出題順序の設定、データバックアップ・初期化などの管理。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold text-slate-800 mb-3">4.2 画面遷移の案</h3>
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 font-mono text-sm text-slate-700">
+                    ホーム／デッキ一覧<br>
+                    &nbsp;&nbsp;├── デッキ詳細・問題一覧 ── 問題作成・編集<br>
+                    &nbsp;&nbsp;├── 学習画面<br>
+                    &nbsp;&nbsp;├── 復習・進捗画面<br>
+                    &nbsp;&nbsp;└── 設定画面
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 開発方針・追加機能の検討 -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-4">
+            <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+                <span class="text-indigo-600">5.</span> 開発方針・追加機能の検討
+            </h2>
+            <div class="space-y-4 text-slate-700 text-sm leading-relaxed">
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">5.1 基本機能と開発の優先順位</h3>
+                    <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
+                        <li>デッキ・問題の管理機能（作成、編集、削除、検索）</li>
+                        <li>基本的な問題形式（一問一答、選択肢、文字入力）</li>
+                        <li>基礎的な学習機能（解答確認・自己評価・進捗保存）</li>
+                        <li>データ管理・復習スケジュール管理</li>
+                    </ul>
+                    <p class="mt-2 text-slate-600">まずは上記のような中核となる基本機能を確実に実装し、安定稼働させることを最優先とする。</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">5.2 演出および拡張機能の扱い</h3>
+                    <ul class="list-disc list-inside space-y-1 pl-2 text-slate-600">
+                        <li><strong>ドパガキ用演出（最重要）</strong>：ユーザーの学習継続意欲を大きく左右するため、基本機能と並行して早期段階から爽快感のある演出やエフェクトを実装・調整する。</li>
+                        <li><strong>デッキ共有・検証機能</strong>：ユーザー間でのコンテンツ共有を円滑にするため、不正ファイルのブロック機能を含めて堅牢に実装する。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        問題作成・学習アプリ 仕様書（作成中・機能や技術は今後変更する場合があります）
+    </footer>
+
+</body>
+</html>
