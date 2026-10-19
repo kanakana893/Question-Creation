@@ -26,8 +26,6 @@
   <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
     <div class="container-lg px-3 my-5 markdown-body">
       
-      <h1><a href="https://kanakana893.github.io/Question-Creation/">Question-Creation</a></h1>
-
     <div class="container-lg px-3 my-5 markdown-body">
       
     <!-- Header -->
