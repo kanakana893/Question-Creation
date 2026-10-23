@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>問題作成・学習アプリ 統合仕様書・要件定義書（レスポンシブ版）</title>
+    <title>問題作成・学習アプリ 統合仕様書</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -464,7 +464,7 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        問題作成・学習アプリ 統合仕様書・要件定義書（最終版）
+        問題作成・学習アプリ 統合仕様書
     </footer>
     </div>
 
