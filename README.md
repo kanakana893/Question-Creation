@@ -1,655 +1,687 @@
 <!DOCTYPE html>
-<html lang="ja" class="scroll-smooth">
+<html lang="ja" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>問題作成・学習アプリ システム設計・仕様書ポータル</title>
-    <!-- Tailwind CSS CDN -->
+    <title>問題作成・学習アプリ 要件定義書 (Ver 0.5)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            500: '#0284c7',
-                            600: '#0369a1',
-                            700: '#075985',
-                            900: '#0c4a6e',
+                        cyber: {
+                            bg: '#0a0d14',
+                            surface: '#121824',
+                            card: '#182030',
+                            border: '#2a364f',
+                            primary: '#3b82f6',
+                            cyan: '#06b6d4',
+                            neon: '#00f0ff',
+                            purple: '#a855f7',
+                            pink: '#ec4899',
+                            warning: '#f59e0b',
+                            danger: '#ef4444',
+                            success: '#10b981'
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
                     }
                 }
             }
         }
     </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
-            word-break: break-word;
-        }
-        /* Custom scrollbar */
+        /* カスタムスクロールバー */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #0a0d14;
         }
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: #1e293b;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #334155;
         }
-        .tab-btn.active {
-            background-color: #0284c7;
-            color: #ffffff;
-            box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+        
+        /* ガラスモフィズム */
+        .glass-panel {
+            background: rgba(24, 32, 48, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel-glow {
+            background: rgba(24, 32, 48, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+        }
+
+        /* ネオンテキストグラデーション */
+        .neon-text {
+            background: linear-gradient(135deg, #00f0ff 0%, #3b82f6 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* スムーススクロール */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* アクティブサイドバーリンク */
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.15) 0%, transparent 100%);
+            border-left: 3px solid #06b6d4;
+            color: #00f0ff;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+<body class="bg-cyber-bg text-slate-300 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Global App Bar Navigation -->
-    <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- App Title / Brand -->
-                <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-brand-600 rounded-lg text-white shadow-md shadow-brand-500/20">
-                        <i data-lucide="book-open" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-brand-400">問題作成・学習アプリ</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-500/20 text-brand-300 border border-brand-500/30">v1.0</span>
-                        </div>
-                        <h1 class="text-sm sm:text-base font-bold text-white leading-tight">ドキュメント & GitHub 統合ポータル</h1>
-                    </div>
+    <!-- ヘッダーバー -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-cyber-border px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <button id="mobile-menu-btn" class="lg:hidden text-slate-400 hover:text-white p-1">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center space-x-2">
+                <div class="p-2 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg text-white shadow-lg shadow-cyan-500/30">
+                    <i data-lucide="brain-circuit" class="w-6 h-6"></i>
                 </div>
-
-                <!-- Main View Switching Nav -->
-                <nav class="hidden md:flex items-center space-x-2 bg-slate-800 p-1.5 rounded-xl border border-slate-700">
-                    <button onclick="switchMainTab('spec')" id="tab-btn-spec" class="tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all flex items-center space-x-1.5">
-                        <i data-lucide="file-text" class="w-4 h-4"></i>
-                        <span>メイン要件定義書</span>
-                    </button>
-                    <button onclick="switchMainTab('github')" id="tab-btn-github" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all flex items-center space-x-1.5">
-                        <i data-lucide="github" class="w-4 h-4"></i>
-                        <span>GitHub仕様書 & 統合データ</span>
-                    </button>
-                    <button onclick="switchMainTab('export')" id="tab-btn-export" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all flex items-center space-x-1.5">
-                        <i data-lucide="code" class="w-4 h-4"></i>
-                        <span>GitHub用コード出力</span>
-                    </button>
-                </nav>
-
-                <!-- Actions / Quick Copy -->
-                <div class="flex items-center space-x-2">
-                    <button onclick="copyCurrentMarkdown()" class="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-all active:scale-95">
-                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                        <span>GitHub Markdownをコピー</span>
-                    </button>
+                <div>
+                    <span class="text-xs font-mono text-cyber-cyan tracking-wider uppercase block leading-none">System Doc</span>
+                    <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                        問題作成・学習アプリ 要件定義書
+                        <span class="text-xs bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan font-mono px-2 py-0.5 rounded-full">v0.5</span>
+                    </h1>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile View Navigation Tabs -->
-        <div class="md:hidden border-t border-slate-800 bg-slate-900/95 px-3 py-2 flex space-x-1 overflow-x-auto">
-            <button onclick="switchMainTab('spec')" id="tab-btn-spec-m" class="tab-btn active px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-slate-300 flex items-center space-x-1">
-                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                <span>要件定義書</span>
-            </button>
-            <button onclick="switchMainTab('github')" id="tab-btn-github-m" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-slate-300 flex items-center space-x-1">
-                <i data-lucide="github" class="w-3.5 h-3.5"></i>
-                <span>GitHub仕様書</span>
-            </button>
-            <button onclick="switchMainTab('export')" id="tab-btn-export-m" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap text-slate-300 flex items-center space-x-1">
-                <i data-lucide="code" class="w-3.5 h-3.5"></i>
-                <span>GitHub用出力</span>
+        <!-- アクションボタン・ステータス -->
+        <div class="flex items-center space-x-4">
+            <div class="hidden sm:flex items-center space-x-2 text-xs font-mono bg-cyber-surface px-3 py-1.5 rounded-full border border-cyber-border">
+                <span class="w-2 h-2 rounded-full bg-cyber-warning animate-pulse"></span>
+                <span class="text-slate-400">STATUS:</span>
+                <span class="text-cyber-warning font-semibold">ユーザー確認事項反映版</span>
+            </div>
+            <button onclick="window.print()" class="flex items-center space-x-1.5 bg-cyber-surface hover:bg-cyber-border text-slate-300 px-3 py-1.5 rounded-lg text-xs font-medium border border-cyber-border transition-all">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span class="hidden md:inline">印刷 / PDF出力</span>
             </button>
         </div>
     </header>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center space-x-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
-        <div class="p-1.5 bg-emerald-500 text-white rounded-lg">
-            <i data-lucide="check" class="w-4 h-4"></i>
-        </div>
-        <span id="toast-message" class="text-xs font-medium">クリップボードにコピーしました！</span>
-    </div>
+    <div class="flex flex-1 overflow-hidden relative">
 
-    <!-- MAIN VIEW CONTAINER 1: メイン要件定義書 (spec) -->
-    <div id="view-spec" class="view-container">
-        <!-- Sub Header for Table of Contents -->
-        <div class="bg-white border-b border-slate-200 sticky top-16 z-40 shadow-xs">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between overflow-x-auto">
-                <div class="flex items-center space-x-1 text-xs font-medium text-slate-600 whitespace-nowrap">
-                    <span class="text-slate-400 mr-2 flex items-center"><i data-lucide="compass" class="w-3.5 h-3.5 mr-1"></i> セクション移動:</span>
-                    <a href="#overview" class="px-2.5 py-1 rounded-md hover:text-brand-600 hover:bg-slate-100 transition-colors">1. 背景・目的</a>
-                    <a href="#business" class="px-2.5 py-1 rounded-md hover:text-brand-600 hover:bg-slate-100 transition-colors">2. 業務要件</a>
-                    <a href="#functional" class="px-2.5 py-1 rounded-md hover:text-brand-600 hover:bg-slate-100 transition-colors">3. 機能要件</a>
-                    <a href="#non-functional" class="px-2.5 py-1 rounded-md hover:text-brand-600 hover:bg-slate-100 transition-colors">4. 非機能要件</a>
-                    <a href="#tbd" class="px-2.5 py-1 rounded-md hover:text-brand-600 hover:bg-slate-100 transition-colors">5. 未決定事項</a>
-                    <a href="#schedule" class="px-2.5 py-1 rounded-md hover:text-brand-600 hover:bg-slate-100 transition-colors">6. 工程・管理</a>
-                </div>
-            </div>
-        </div>
-
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-10">
-
-            <!-- Executive Summary Banner -->
-            <div class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 rounded-2xl text-white p-6 sm:p-8 shadow-xl relative overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
-                    <i data-lucide="layers" class="w-80 h-80"></i>
-                </div>
-                <div class="relative z-10 max-w-3xl space-y-4">
-                    <div class="flex flex-wrap items-center gap-2 text-xs font-medium">
-                        <span class="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-brand-100 border border-white/10">個人学習向けデスクトップアプリ</span>
-                        <span class="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-brand-100 border border-white/10">対象OS: Windows 10 / 11</span>
-                    </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">問題作成・学習アプリ システム要件定義書</h2>
-                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-                        本ドキュメントは、個人学習者向けのデスクトップ用問題作成・反復学習アプリにおけるシステム要件、業務フロー（As-Is / To-Be）、機能および非機能要件を明確に定義した基本設計指針です。
-                    </p>
-                    <div class="pt-2 flex flex-wrap gap-6 text-xs text-slate-300 border-t border-white/10">
-                        <div>作成日: <span class="font-semibold text-white">2026年10月23日</span></div>
-                        <div>最終更新: <span class="font-semibold text-white">2026年10月23日</span></div>
-                        <div>管理番号: <span class="font-semibold text-white">REQ-2026-001</span></div>
-                    </div>
+        <!-- サイドバーナビゲーション -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-cyber-surface/95 border-r border-cyber-border transition-transform transform -translate-x-full lg:translate-x-0 lg:static lg:inset-auto lg:flex flex-col pt-16 lg:pt-0">
+            <div class="p-4 border-b border-cyber-border/50">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-slate-500"></i>
+                    <input type="text" id="quick-search" placeholder="ドキュメント内検索..." class="w-full bg-cyber-bg border border-cyber-border rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyber-cyan focus:ring-1 focus:ring-cyber-cyan">
                 </div>
             </div>
 
-            <!-- Metrics Overview Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                    <div class="p-3 bg-brand-50 text-brand-600 rounded-lg">
-                        <i data-lucide="check-square" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-900">44</div>
-                        <div class="text-xs font-medium text-slate-500">定義済み機能要件</div>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                    <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
-                        <i data-lucide="help-circle" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-900">22</div>
-                        <div class="text-xs font-medium text-slate-500">未決定・協議事項 (TBD)</div>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
-                        <i data-lucide="layout" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-900">6</div>
-                        <div class="text-xs font-medium text-slate-500">主要画面構成</div>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-slate-900">100%</div>
-                        <div class="text-xs font-medium text-slate-500">ローカル保存型設計</div>
-                    </div>
-                </div>
-            </div>
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1 text-xs">
+                <a href="#metadata" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="file-text" class="w-4 h-4 text-cyber-cyan"></i> 文書情報 & 概要
+                </a>
+                <a href="#overview" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="target" class="w-4 h-4 text-blue-400"></i> 1. システム概要 & 用語
+                </a>
+                <a href="#scope" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i> 2-3. 背景 & 対象範囲
+                </a>
+                <a href="#functional" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="cpu" class="w-4 h-4 text-cyber-neon"></i> 4. 機能要件 (FR)
+                </a>
+                <a href="#review-logic" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all pl-6">
+                    <i data-lucide="repeat" class="w-3.5 h-3.5 text-cyber-cyan"></i> 復習ロジック & サイクル
+                </a>
+                <a href="#screens" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="layout" class="w-4 h-4 text-emerald-400"></i> 5. 画面要件
+                </a>
+                <a href="#data-requirements" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="database" class="w-4 h-4 text-amber-400"></i> 6. データ要件
+                </a>
+                <a href="#interfaces" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="network" class="w-4 h-4 text-pink-400"></i> 7. 外部IF & 非機能要件
+                </a>
+                <a href="#tbd-section" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-amber-400/90 hover:text-amber-300 hover:bg-amber-500/10 transition-all font-semibold">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i> 9. 未決定事項 (TBD)
+                </a>
+                <a href="#acceptance" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-indigo-400"></i> 10. 受け入れ条件 (AC)
+                </a>
+                <a href="#roadmap" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-cyber-card transition-all">
+                    <i data-lucide="flag" class="w-4 h-4 text-cyan-400"></i> 11. 実装優先順位
+                </a>
+            </nav>
 
-            <!-- 1. システムの目的・背景 -->
-            <section id="overview" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50/50 border-b border-slate-200 p-5 sm:p-6 flex items-center space-x-3">
-                    <div class="p-2 bg-brand-100 text-brand-700 rounded-lg">
-                        <i data-lucide="target" class="w-5 h-5"></i>
-                    </div>
+            <div class="p-4 border-t border-cyber-border text-[11px] text-slate-500 font-mono">
+                Last updated: 2026-10-23<br>
+                Target OS: Windows 10 / 11
+            </div>
+        </aside>
+
+        <!-- オーバーレイ (モバイル表示用) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+        <!-- メインコンテンツエリア -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 space-y-12">
+
+            <!-- ヒーロー / ドキュメントヘッダー -->
+            <section id="metadata" class="glass-panel-glow rounded-2xl p-6 lg:p-8 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-gradient-to-br from-cyber-cyan/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-cyber-border/80 pb-6 mb-6">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900">1. システムの目的・背景</h3>
-                        <p class="text-xs text-slate-500">システムの存在意義と解決すべき課題の明確化</p>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-mono font-semibold">REQUIREMENTS SPECIFICATION</span>
+                            <span class="px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/30 text-xs font-mono">Desktop App</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                            問題作成・学習アプリ <span class="neon-text">要件定義書</span>
+                        </h2>
+                    </div>
+                    
+                    <!-- KPI ミニカード -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full sm:w-auto">
+                        <div class="bg-cyber-bg/80 border border-cyber-border p-3 rounded-xl">
+                            <div class="text-[10px] text-slate-400 uppercase font-mono">バージョン</div>
+                            <div class="text-base font-bold text-cyber-cyan font-mono">v0.5</div>
+                        </div>
+                        <div class="bg-cyber-bg/80 border border-cyber-border p-3 rounded-xl">
+                            <div class="text-[10px] text-slate-400 uppercase font-mono">機能要件数</div>
+                            <div class="text-base font-bold text-white font-mono">48 FRs</div>
+                        </div>
+                        <div class="bg-cyber-bg/80 border border-cyber-border p-3 rounded-xl col-span-2 sm:col-span-1">
+                            <div class="text-[10px] text-slate-400 uppercase font-mono">未決定課題</div>
+                            <div class="text-base font-bold text-cyber-warning font-mono flex items-center gap-1">
+                                <i data-lucide="alert-circle" class="w-4 h-4"></i> 2 TBD
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="p-6 sm:p-8 space-y-6">
-                    <div>
-                        <h4 class="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-2">1.1 システムの目的</h4>
-                        <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
-                            利用者が独自の問題集（デッキ）を作成・管理し、間隔反復（スペースド・レピティション）を用いた効率的な記憶定着を図るためのデスクトップ学習アプリケーションです。解答プロセスにおける思考ノート・計算メモの記録や、モチベーションを高める演出・実績通知機能を通じ、継続的な学習およびケアレスミスの防止・弱点克服を強力に支援します。
+
+                <!-- メタデータグリッド -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                    <div class="bg-cyber-surface/60 p-3 rounded-lg border border-cyber-border/50">
+                        <span class="text-slate-500 block mb-1">基準資料:</span>
+                        <span class="text-slate-200 font-medium">問題作成・学習アプリ 統合仕様書・要件定義書</span>
+                    </div>
+                    <div class="bg-cyber-surface/60 p-3 rounded-lg border border-cyber-border/50">
+                        <span class="text-slate-500 block mb-1">作成日:</span>
+                        <span class="text-slate-200 font-mono">2026年10月23日</span>
+                    </div>
+                    <div class="bg-cyber-surface/60 p-3 rounded-lg border border-cyber-border/50">
+                        <span class="text-slate-500 block mb-1">対象範囲:</span>
+                        <span class="text-slate-200 font-medium">個人向け機能全体 (学校機能は除外)</span>
+                    </div>
+                    <div class="bg-cyber-surface/60 p-3 rounded-lg border border-cyber-border/50">
+                        <span class="text-slate-500 block mb-1">主要更新:</span>
+                        <span class="text-cyber-cyan font-medium">2段階評価・カード/問題分離の反映</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. システム概要 & 想定環境 -->
+            <section id="overview" class="space-y-6">
+                <div class="flex items-center gap-3 border-l-4 border-cyber-cyan pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">1. システム概要</h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- 目的カード -->
+                    <div class="lg:col-span-2 glass-panel rounded-xl p-6 space-y-4">
+                        <h4 class="text-sm font-semibold text-cyber-cyan flex items-center gap-2 font-mono uppercase tracking-wider">
+                            <i data-lucide="target" class="w-4 h-4"></i> 1.1 システムの目的
+                        </h4>
+                        <p class="text-slate-300 leading-relaxed text-sm">
+                            利用者が独自のデッキを作成・管理し、コンテンツ作成時に<strong class="text-white bg-blue-500/20 px-1.5 py-0.5 rounded">「カード形式」</strong>または<strong class="text-white bg-purple-500/20 px-1.5 py-0.5 rounded">「問題形式」</strong>を選択して登録できる暗記・学習アプリ。
                         </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div class="bg-cyber-surface p-3.5 rounded-lg border border-cyber-border">
+                                <span class="text-xs font-bold text-blue-400 block mb-1">🎴 カード形式</span>
+                                <p class="text-xs text-slate-400">表面・裏面構造。「もう一度／正解」の2段階評価に基づき、間隔反復スケジュールにより暗記を極限まで効率化。</p>
+                            </div>
+                            <div class="bg-cyber-surface p-3.5 rounded-lg border border-cyber-border">
+                                <span class="text-xs font-bold text-purple-400 block mb-1">📝 問題形式</span>
+                                <p class="text-xs text-slate-400">一問一答、選択式、文字入力等の実践演習。解説表示や採点を行う（カード形式の復習ロジックは非適用）。</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                            <h4 class="text-sm font-bold text-slate-900 flex items-center mb-3">
-                                <i data-lucide="users" class="w-4 h-4 mr-2 text-brand-600"></i>
-                                想定ターゲット層
-                            </h4>
-                            <ul class="space-y-2 text-xs sm:text-sm text-slate-600">
-                                <li class="flex items-start">
-                                    <span class="w-1.5 h-1.5 bg-brand-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                                    <span>個人学習者および各種資格試験の受験生</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="w-1.5 h-1.5 bg-brand-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                                    <span>計算過程のミスや同じ解答エラーの再発を防止したい学習者</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="w-1.5 h-1.5 bg-brand-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                                    <span>家庭で子供の復習・学習指導を行う保護者</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
-                            <h4 class="text-sm font-bold text-slate-900 flex items-center mb-3">
-                                <i data-lucide="monitor" class="w-4 h-4 mr-2 text-brand-600"></i>
-                                基本動作環境
-                            </h4>
-                            <dl class="space-y-2 text-xs sm:text-sm">
-                                <div class="flex justify-between py-1 border-b border-slate-200">
-                                    <dt class="text-slate-500">形態</dt>
-                                    <dd class="font-medium text-slate-800">デスクトップアプリケーション（スタンドアロン）</dd>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-slate-200">
-                                    <dt class="text-slate-500">対象OS</dt>
-                                    <dd class="font-medium text-slate-800">Windows 10 / Windows 11</dd>
-                                </div>
-                                <div class="flex justify-between py-1">
-                                    <dt class="text-slate-500">データ保存</dt>
-                                    <dd class="font-medium text-slate-800">完全ローカルストレージ（パス参照方式）</dd>
-                                </div>
-                            </dl>
-                        </div>
+                    <!-- 想定利用者 -->
+                    <div class="glass-panel rounded-xl p-6 space-y-4">
+                        <h4 class="text-sm font-semibold text-cyber-purple flex items-center gap-2 font-mono uppercase tracking-wider">
+                            <i data-lucide="users" class="w-4 h-4"></i> 1.2 想定利用者
+                        </h4>
+                        <ul class="space-y-2.5 text-xs">
+                            <li class="flex items-start gap-2 text-slate-300">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-cyber-cyan shrink-0 mt-0.5"></i>
+                                個人学習者および資格試験の受験者
+                            </li>
+                            <li class="flex items-start gap-2 text-slate-300">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-cyber-cyan shrink-0 mt-0.5"></i>
+                                ケアレスミスや同一誤答の再発を防ぎたい学習者
+                            </li>
+                            <li class="flex items-start gap-2 text-slate-300">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-cyber-cyan shrink-0 mt-0.5"></i>
+                                子供の学習をサポートする保護者
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </section>
 
-            <!-- 2. 業務要件 -->
-            <section id="business" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50/50 border-b border-slate-200 p-5 sm:p-6 flex items-center space-x-3">
-                    <div class="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
-                        <i data-lucide="git-commit" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">2. 業務要件（As-Is / To-Be）</h3>
-                        <p class="text-xs text-slate-500">システム導入による現状業務の変化とワークフローの比較</p>
-                    </div>
-                </div>
-                <div class="p-6 sm:p-8 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- As-Is -->
-                        <div class="border border-red-200 bg-red-50/30 rounded-xl p-5 space-y-3">
-                            <div class="flex items-center text-red-700 font-bold text-sm">
-                                <i data-lucide="alert-circle" class="w-4 h-4 mr-2"></i>
-                                現状の課題（As-Is）
-                            </div>
-                            <ul class="space-y-2 text-xs sm:text-sm text-slate-600">
-                                <li class="flex items-start">
-                                    <span class="text-red-500 mr-2">✕</span>
-                                    復習スケジュールが個人管理のため、復習タイミングが曖昧になり記憶が定着しにくい。
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="text-red-500 mr-2">✕</span>
-                                    解答時の思考プロセスや計算過程を残せず、同じ間違え方を繰り返してしまう。
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="text-red-500 mr-2">✕</span>
-                                    単体問題・デッキごとの正確な正答率や苦手範囲の定量的な可視化が困難。
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- To-Be -->
-                        <div class="border border-emerald-200 bg-emerald-50/30 rounded-xl p-5 space-y-3">
-                            <div class="flex items-center text-emerald-700 font-bold text-sm">
-                                <i data-lucide="check-circle-2" class="w-4 h-4 mr-2"></i>
-                                システム導入後（To-Be）
-                            </div>
-                            <ul class="space-y-2 text-xs sm:text-sm text-slate-600">
-                                <li class="flex items-start">
-                                    <span class="text-emerald-600 mr-2">✓</span>
-                                    4段階の自己評価に基づき、システムが最適な復習タイミング（間隔反復）を自動算出。
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="text-emerald-600 mr-2">✓</span>
-                                    解答時に手書き・テキストによるメモを残し、過去のメモを即座に参照して原因を特定。
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="text-emerald-600 mr-2">✓</span>
-                                    問題別・デッキ別の正答率が自動集計され、苦手領域を視覚的に把握・分析可能。
-                                </li>
-                            </ul>
+                <!-- 利用形態 & 用語テーブル -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 環境 -->
+                    <div class="glass-panel rounded-xl p-5 space-y-3">
+                        <h4 class="text-sm font-semibold text-white font-mono flex items-center gap-2">
+                            <i data-lucide="monitor" class="w-4 h-4 text-cyber-cyan"></i> 1.3 利用形態・対象環境
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <tbody class="divide-y divide-cyber-border/50">
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400 font-medium">形態</td>
+                                        <td class="py-2 px-3 text-slate-200">デスクトップアプリ (オフライン動作)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400 font-medium">対象OS</td>
+                                        <td class="py-2 px-3 text-slate-200 font-mono">Windows 10 / Windows 11</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400 font-medium">データ保存</td>
+                                        <td class="py-2 px-3 text-slate-200">完全ローカル保存（外部通信なし）</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-slate-400 font-medium">メディア保存</td>
+                                        <td class="py-2 px-3 text-slate-200">専用ローカルフォルダ保存 + DBパス保持</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Workflow Steps -->
-                    <div class="pt-4">
-                        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">標準的な業務利用フロー</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-center space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400">STEP 1</span>
-                                <div class="text-xs font-bold text-slate-800">デッキ・問題登録</div>
-                                <p class="text-[11px] text-slate-500">手動入力・画像添付</p>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-center space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400">STEP 2</span>
-                                <div class="text-xs font-bold text-slate-800">学習セッション開始</div>
-                                <p class="text-[11px] text-slate-500">条件による絞り込み</p>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-center space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400">STEP 3</span>
-                                <div class="text-xs font-bold text-slate-800">解答・メモ記録</div>
-                                <p class="text-[11px] text-slate-500">思考過程の保管</p>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-center space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400">STEP 4</span>
-                                <div class="text-xs font-bold text-slate-800">自己評価・採点</div>
-                                <p class="text-[11px] text-slate-500">4段階評価＆記述採点</p>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-center space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400">STEP 5</span>
-                                <div class="text-xs font-bold text-slate-800">復習＆データ分析</div>
-                                <p class="text-[11px] text-slate-500">正答率・統計の確認</p>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-center space-y-1">
-                                <span class="text-[10px] font-bold text-slate-400">STEP 6</span>
-                                <div class="text-xs font-bold text-slate-800">共有・バックアップ</div>
-                                <p class="text-[11px] text-slate-500">データ出力と安全保管</p>
-                            </div>
+                    <!-- 用語 -->
+                    <div class="glass-panel rounded-xl p-5 space-y-3">
+                        <h4 class="text-sm font-semibold text-white font-mono flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-4 h-4 text-cyber-purple"></i> 1.4 重要用語定義
+                        </h4>
+                        <div class="overflow-x-auto max-h-48 overflow-y-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-cyber-surface/80 text-slate-400 font-mono sticky top-0">
+                                    <tr>
+                                        <th class="p-2">用語</th>
+                                        <th class="p-2">定義</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-cyber-border/50">
+                                    <tr>
+                                        <td class="p-2 font-bold text-cyber-cyan">デッキ</td>
+                                        <td class="p-2 text-slate-300">複数の問題をまとめた問題集の単位</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 font-bold text-cyber-cyan">自己評価</td>
+                                        <td class="p-2 text-slate-300">カード解答後に選ぶ「もう一度／正解」の2段階評価</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 font-bold text-cyber-cyan">復習期限到来</td>
+                                        <td class="p-2 text-slate-300">短時間は予定時刻到達、1日以上は日付変更時点</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. 機能要件 -->
-            <section id="functional" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50/50 border-b border-slate-200 p-5 sm:p-6 flex items-center space-x-3">
-                    <div class="p-2 bg-brand-100 text-brand-700 rounded-lg">
-                        <i data-lucide="list-checks" class="w-5 h-5"></i>
+            <!-- 2 & 3. スコープ (対象範囲) -->
+            <section id="scope" class="space-y-6">
+                <div class="flex items-center gap-3 border-l-4 border-purple-500 pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">2 - 3. スコープ (対象範囲定義)</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 今回の対象範囲 -->
+                    <div class="glass-panel border-emerald-500/30 rounded-xl p-6 space-y-4 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 px-3 py-1 bg-emerald-500/10 border-b border-l border-emerald-500/30 text-emerald-400 font-mono text-[10px] rounded-bl-lg font-bold">
+                            IN SCOPE
+                        </div>
+                        <h4 class="text-base font-bold text-emerald-400 flex items-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i> 今回の実装対象 (Phase 1)
+                        </h4>
+                        <ul class="space-y-2 text-xs text-slate-300">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>デッキ・問題（カード/問題形式）のCRUD操作</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>一問一答、択一/複数選択、文字入力、画像付き問題</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>テキスト＆手書きメモ機能（過去3回分の履歴保持）</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>カード形式用 2段階評価＆間隔反復復習アルゴリズム</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>学習統計（正答率100%方式）、実績・バッジ・演出</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>ローカルデータバックアップ・復元・安全な初期化</li>
+                        </ul>
+                    </div>
+
+                    <!-- 将来構想 -->
+                    <div class="glass-panel border-slate-700 rounded-xl p-6 space-y-4 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 px-3 py-1 bg-slate-700/50 text-slate-400 font-mono text-[10px] rounded-bl-lg">
+                            FUTURE SCOPE
+                        </div>
+                        <h4 class="text-base font-bold text-slate-400 flex items-center gap-2">
+                            <i data-lucide="clock" class="w-5 h-5"></i> 将来構想 (Phase 2以降)
+                        </h4>
+                        <ul class="space-y-2 text-xs text-slate-400">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>AIによる自動問題生成・教材画像解析</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>教師によるデッキ一括配布機能</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>生徒の学習履歴をサーバーに集約するクラウド機能</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>学校・教育機関向けダッシュボード＆ライセンス展開</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-slate-600"></span>デッキのユーザー間オンライン共有エクスポート</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. 機能要件 (FR) - インタラクティブ検索付き -->
+            <section id="functional" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-l-4 border-cyber-neon pl-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-white tracking-wide">4. 機能要件 (Functional Requirements)</h3>
+                        <p class="text-xs text-slate-400">全48個の機能要件一覧。リアルタイムにフィルタリングが可能です。</p>
+                    </div>
+                    
+                    <!-- カテゴリフィルター -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input type="text" id="fr-search" placeholder="要件ID / キーワード検索..." class="bg-cyber-surface border border-cyber-border rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyber-cyan">
+                        <select id="fr-filter" class="bg-cyber-surface border border-cyber-border rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-cyber-cyan">
+                            <option value="ALL">全てのカテゴリー</option>
+                            <option value="デッキ">デッキ管理</option>
+                            <option value="問題">問題作成・演習</option>
+                            <option value="学習">学習・メモ</option>
+                            <option value="復習">復習・評価</option>
+                            <option value="データ">データ・バックアップ</option>
+                            <option value="演出">演出・実績</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 要件カードリスト -->
+                <div id="fr-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto pr-2">
+                    <!-- JSで初期化生成・フィルタリング -->
+                </div>
+            </section>
+
+            <!-- 4.2 カード形式 復習ロジック特別セクション -->
+            <section id="review-logic" class="glass-panel border-cyber-cyan/30 rounded-2xl p-6 lg:p-8 space-y-6 relative">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-cyber-cyan/10 border border-cyber-cyan/30 rounded-lg text-cyber-cyan">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900">3. 機能要件一覧</h3>
-                        <p class="text-xs text-slate-500">システムに実装する具体的な機能仕様定義（全44要件）</p>
+                        <h3 class="text-lg font-bold text-white">カード形式：復習スケジュール＆学習サイクル（確定仕様）</h3>
+                        <p class="text-xs text-slate-400">Ankiの概念を取り入れた2段階自己評価アルゴリズムの定義</p>
                     </div>
                 </div>
 
-                <div class="p-4 bg-slate-100/50 border-b border-slate-200 flex items-center justify-between text-xs text-slate-600">
-                    <div>分類: <span class="font-semibold text-slate-800">コア機能 / 学習 / データ管理 / 演出</span></div>
-                    <div>表示: <span class="font-semibold text-slate-800">44件中 44件表示</span></div>
+                <!-- ステップタイムライン -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <div class="bg-cyber-surface/90 border border-cyber-border p-5 rounded-xl space-y-3">
+                        <h4 class="text-xs font-mono font-bold text-cyber-warning uppercase flex items-center gap-1.5">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 「もう一度」選択時
+                        </h4>
+                        <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-xs text-slate-300">
+                            学習段階を<strong>即時リセット</strong>し、<span class="text-red-400 font-bold font-mono">1分後</span>に再出題候補へ戻す。
+                        </div>
+                    </div>
+
+                    <div class="bg-cyber-surface/90 border border-cyber-border p-5 rounded-xl space-y-3">
+                        <h4 class="text-xs font-mono font-bold text-cyber-cyan uppercase flex items-center gap-1.5">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i> 「正解」選択時の段階推移
+                        </h4>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+                            <span class="px-2 py-1 bg-cyber-bg border border-cyber-border rounded text-slate-300">10分後</span> →
+                            <span class="px-2 py-1 bg-cyber-bg border border-cyber-border rounded text-slate-300">1日後</span> →
+                            <span class="px-2 py-1 bg-cyber-bg border border-cyber-border rounded text-slate-300">3日後</span> →
+                            <span class="px-2 py-1 bg-cyber-bg border border-cyber-border rounded text-slate-300">7日後</span> →
+                            <span class="px-2 py-1 bg-cyber-bg border border-cyber-border rounded text-slate-300">14日後</span> →
+                            <span class="px-2 py-1 bg-cyber-cyan/20 border border-cyber-cyan/50 rounded text-cyber-cyan font-bold">以降 2倍</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">※1日以上の復習は経過時間ではなく「日付変更（0:00）」で判定。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. 画面要件 -->
+            <section id="screens" class="space-y-6">
+                <div class="flex items-center gap-3 border-l-4 border-emerald-400 pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">5. 画面要件</h3>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[700px]">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                                <th class="py-3 px-4 w-24">要件ID</th>
-                                <th class="py-3 px-4 w-40">機能名</th>
-                                <th class="py-3 px-4">機能要件詳細</th>
-                                <th class="py-3 px-4 w-28 text-center">ステータス</th>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="glass-panel p-4 rounded-xl space-y-2 border-t-2 border-t-blue-500">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-white">ホーム / デッキ一覧</span>
+                            <i data-lucide="home" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">デッキ一覧、正答率、新規作成・学習開始・共有読み込み導線</p>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl space-y-2 border-t-2 border-t-purple-500">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-white">デッキ詳細・問題一覧</span>
+                            <i data-lucide="list" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">デッキ内の問題一覧表示、問題ごと正答率、CRUD操作</p>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl space-y-2 border-t-2 border-t-cyber-cyan">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-white">問題作成・編集</span>
+                            <i data-lucide="edit-3" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">開始時に「カード形式/問題形式」を選択。形式別専用UI</p>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl space-y-2 border-t-2 border-t-emerald-500">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-white">学習画面</span>
+                            <i data-lucide="play" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">逐次表示、手書き/テキストメモ、裏面確認＆2段階評価</p>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl space-y-2 border-t-2 border-t-amber-500">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-white">復習・進捗画面</span>
+                            <i data-lucide="bar-chart-2" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">復習期限到来問題リスト、実績・バッジ、正答率統計</p>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl space-y-2 border-t-2 border-t-pink-500">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-white">設定画面</span>
+                            <i data-lucide="settings" class="w-4 h-4 text-slate-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400">復習間隔、出題順序、バックアップ・復元、全初期化</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6 & 7 & 8. データ・外部IF・非機能要件 -->
+            <section id="data-requirements" class="space-y-6">
+                <div class="flex items-center gap-3 border-l-4 border-amber-400 pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">6 - 8. データ・非機能要件</h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- データ構造 -->
+                    <div class="glass-panel p-5 rounded-xl space-y-3">
+                        <h4 class="text-sm font-bold text-white flex items-center gap-2 font-mono">
+                            <i data-lucide="database" class="w-4 h-4 text-amber-400"></i> データ要件仕様
+                        </h4>
+                        <ul class="space-y-2 text-xs text-slate-300 divide-y divide-cyber-border/40">
+                            <li class="pt-2"><strong>メディア分離:</strong> 画像/手書きはローカル保存、DBはファイルパス管理</li>
+                            <li class="pt-2"><strong>カスケード削除:</strong> 問題削除時、関連履歴・メモ・添付ファイルも自動消去</li>
+                            <li class="pt-2"><strong>メモ履歴:</strong> 問題/セッションごとに過去3回分保持、4回目で最古上書き</li>
+                        </ul>
+                    </div>
+
+                    <!-- 非機能要件 -->
+                    <div class="glass-panel p-5 rounded-xl space-y-3">
+                        <h4 class="text-sm font-bold text-white flex items-center gap-2 font-mono" id="interfaces">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-pink-400"></i> 非機能要件 (NFR)
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-cyber-surface p-2.5 rounded border border-cyber-border">
+                                <span class="text-slate-500 block">性能:</span>
+                                BLOB保存の回避で高速化
+                            </div>
+                            <div class="bg-cyber-surface p-2.5 rounded border border-cyber-border">
+                                <span class="text-slate-500 block">信頼性:</span>
+                                途中終了時の自動進捗保存
+                            </div>
+                            <div class="bg-cyber-surface p-2.5 rounded border border-cyber-border">
+                                <span class="text-slate-500 block">安全性:</span>
+                                インポート時のファイル検証
+                            </div>
+                            <div class="bg-cyber-surface p-2.5 rounded border border-cyber-border">
+                                <span class="text-slate-500 block">プライバシー:</span>
+                                外部通信完全遮断
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 9. 未決定事項 (TBD) ハイライトカード -->
+            <section id="tbd-section" class="space-y-6">
+                <div class="flex items-center gap-3 border-l-4 border-cyber-warning pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">9. 未決定事項・要確認リスト (TBD)</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- TBD-002 -->
+                    <div class="glass-panel border-cyber-warning/50 rounded-xl p-6 relative overflow-hidden bg-gradient-to-br from-amber-500/5 to-transparent">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="px-2.5 py-1 bg-cyber-warning/20 border border-cyber-warning/40 text-cyber-warning rounded-md font-mono text-xs font-bold">
+                                TBD-002
+                            </span>
+                            <span class="text-xs text-cyber-warning flex items-center gap-1 font-semibold">
+                                <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> 確認必要
+                            </span>
+                        </div>
+                        <h4 class="text-base font-bold text-white mb-2">カード形式 復習間隔の上限値</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            最大復習間隔として<strong class="text-cyber-warning">「365日」</strong>と<strong class="text-cyber-warning">「999日」</strong>の2つの記載が元の確認資料内に混在しており、最終決定が必要。
+                        </p>
+                        <div class="bg-cyber-surface p-3 rounded-lg text-[11px] font-mono text-slate-400">
+                            決定案: 一般的な資格勉強期間（1年=365日）か、長期記憶（999日）のどちらを優先するか。
+                        </div>
+                    </div>
+
+                    <!-- TBD-013 -->
+                    <div class="glass-panel border-cyber-warning/50 rounded-xl p-6 relative overflow-hidden bg-gradient-to-br from-amber-500/5 to-transparent">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="px-2.5 py-1 bg-cyber-warning/20 border border-cyber-warning/40 text-cyber-warning rounded-md font-mono text-xs font-bold">
+                                TBD-013
+                            </span>
+                            <span class="text-xs text-cyber-warning flex items-center gap-1 font-semibold">
+                                <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> 確認必要
+                            </span>
+                        </div>
+                        <h4 class="text-base font-bold text-white mb-2">メディアファイル欠損時の挙動</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            ローカルに保存された画像・手書きメモファイルが手動移動・削除された場合のアプリ上でのプレースホルダー表示・検出・修復処理の仕様。
+                        </p>
+                        <div class="bg-cyber-surface p-3 rounded-lg text-[11px] font-mono text-slate-400">
+                            決定案: 「画像リンク切れ」アイコンを表示し、バックアップからの再読み込みを促すUI。
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10. 受け入れ条件 (AC) -->
+            <section id="acceptance" class="space-y-6">
+                <div class="flex items-center gap-3 border-l-4 border-indigo-500 pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">10. 受け入れ条件 (Acceptance Criteria)</h3>
+                </div>
+
+                <div class="glass-panel rounded-xl p-5 overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-cyber-surface text-slate-400 font-mono border-b border-cyber-border">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">対象</th>
+                                <th class="p-3">受け入れ検証条件</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 text-xs sm:text-sm text-slate-700">
+                        <tbody class="divide-y divide-cyber-border/40 text-slate-300">
                             <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-001</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">デッキ作成</td>
-                                <td class="py-3.5 px-4">利用者は新しいデッキを作成し、デッキ名および説明を設定できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-002</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">デッキ編集・削除</td>
-                                <td class="py-3.5 px-4">利用者は既存デッキの情報を編集し、デッキを削除できる。（削除時挙動はTBD）</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">一部TBD</span></td>
+                                <td class="p-3 font-mono text-indigo-400 font-bold">AC-001</td>
+                                <td class="p-3 font-medium text-white">デッキ</td>
+                                <td class="p-3">作成、一覧表示、名前・説明編集が問題なく行えること。</td>
                             </tr>
                             <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-003</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">デッキ内問題一覧</td>
-                                <td class="py-3.5 px-4">利用者は指定したデッキに登録されている問題一覧を表示できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
+                                <td class="p-3 font-mono text-indigo-400 font-bold">AC-007</td>
+                                <td class="p-3 font-medium text-white">復習</td>
+                                <td class="p-3">「もう一度」で1分後戻り、「正解」で10分→1日→3日...と正確に次回予定が計算されること。</td>
                             </tr>
                             <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-004</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">問題作成</td>
-                                <td class="py-3.5 px-4">利用者は問題文および解答を登録できる。形式に応じて選択肢等を設定可能。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
+                                <td class="p-3 font-mono text-indigo-400 font-bold">AC-014</td>
+                                <td class="p-3 font-medium text-white">形式選択</td>
+                                <td class="p-3">作成開始時に「カード形式/問題形式」が選択でき、対応する入力欄が表示されること。</td>
                             </tr>
                             <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-005</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">問題編集・削除</td>
-                                <td class="py-3.5 px-4">利用者は登録済み問題を編集・削除できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-006</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">問題の追加・移動</td>
-                                <td class="py-3.5 px-4">利用者は問題をデッキに追加し、別のデッキへ移動できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-007</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">画像添付</td>
-                                <td class="py-3.5 px-4">利用者は問題に画像を添付し、問題表示時に確認できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-008</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">参考URL</td>
-                                <td class="py-3.5 px-4">問題に参考URLを登録し、外部ブラウザ等で起動できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-009</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">キーワード検索</td>
-                                <td class="py-3.5 px-4">利用者は問題をキーワードで横断検索できる。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-010〜013</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">基本問題形式</td>
-                                <td class="py-3.5 px-4">一問一答、画像付き、択一選択、複数選択の各出題形式に対応。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr class="bg-brand-50/40">
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-014</td>
-                                <td class="py-3.5 px-4 font-bold text-brand-900">記述文字入力解答</td>
-                                <td class="py-3.5 px-4 text-brand-900">文字入力による解答。キーワード完全一致判定に加え、「大体あっていればOK」の自己採点機能を併用。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-brand-200 text-brand-900">最新更新</span></td>
-                            </tr>
-                            <tr class="bg-brand-50/40">
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-020〜022</td>
-                                <td class="py-3.5 px-4 font-bold text-brand-900">思考メモ・過去メモ</td>
-                                <td class="py-3.5 px-4 text-brand-900">テキストおよびマウス/タッチ手書き入力による思考プロセス記録。「過去メモ表示」によるミス傾向の確認。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-brand-200 text-brand-900">最新更新</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-023〜026</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">間隔反復復習管理</td>
-                                <td class="py-3.5 px-4">4段階自己評価に基づく次回評価日時の自動算出および復習期日到来問題の一覧表示。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-029〜030</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">正答率自動集計</td>
-                                <td class="py-3.5 px-4">問題単体およびデッキ全体の累計正答率を自動集計・表示。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-031〜033</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">デッキ入出力・検証</td>
-                                <td class="py-3.5 px-4">添付素材込みのデッキエクスポート/インポート機能と不正ファイルの入力バリデーション。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
-                            </tr>
-                            <tr class="bg-brand-50/40">
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-035</td>
-                                <td class="py-3.5 px-4 font-bold text-brand-900">ローカルファイルパス管理</td>
-                                <td class="py-3.5 px-4 text-brand-900">画像や手書きデータはDB内にBLOB保存せず、ローカル固有フォルダに保存しパス参照する。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-brand-200 text-brand-900">最新更新</span></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3.5 px-4 font-mono font-semibold text-brand-600">FR-042〜044</td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">演出・実績通知</td>
-                                <td class="py-3.5 px-4">「簡単」評価・正解時のエフェクト演出および実績解除バッジ通知（ゲーミフィケーション）。</td>
-                                <td class="py-3.5 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">確定</span></td>
+                                <td class="p-3 font-mono text-indigo-400 font-bold">AC-017</td>
+                                <td class="p-3 font-medium text-white">ロジック分離</td>
+                                <td class="p-3">カード形式の復習日時と、問題形式の演習履歴が混同されずに分離処理されること。</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- 4. 非機能要件 -->
-            <section id="non-functional" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50/50 border-b border-slate-200 p-5 sm:p-6 flex items-center space-x-3">
-                    <div class="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
-                        <i data-lucide="shield" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">4. 非機能要件</h3>
-                        <p class="text-xs text-slate-500">品質、性能、セキュリティ、運用保守性の定義</p>
-                    </div>
-                </div>
-                <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="flex items-center text-xs font-bold text-brand-600 uppercase tracking-wider">
-                            <i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> 性能 (Performance)
-                        </div>
-                        <div class="text-sm font-bold text-slate-900">ローカルファイル分離管理</div>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            画像・手書きメモ描画データはデータベース内にBLOB保存せず、外部ファイルとしてパス管理することでDB軽量化と高速な検索・応答性を維持する。
-                        </p>
-                    </div>
-
-                    <div class="space-y-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="flex items-center text-xs font-bold text-brand-600 uppercase tracking-wider">
-                            <i data-lucide="lock" class="w-4 h-4 mr-1.5"></i> セキュリティ・データ保護
-                        </div>
-                        <div class="text-sm font-bold text-slate-900">完全ローカル保存・完全性検証</div>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            外部通信を必要とせずすべてのデータをPC内にローカル保存。ファイルインポート時は構造・形式チェックを行い、パストラバーサル等を防止。
-                        </p>
-                    </div>
-
-                    <div class="space-y-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="flex items-center text-xs font-bold text-brand-600 uppercase tracking-wider">
-                            <i data-lucide="refresh-cw" class="w-4 h-4 mr-1.5"></i> 信頼性・移行性
-                        </div>
-                        <div class="text-sm font-bold text-slate-900">途中保存とバックアップ復元</div>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            学習セッションの途中終了時に進捗状態を保護。ユーザー操作による全データのバックアップ書き出しおよび別環境への復元機能を提供。
-                        </p>
-                    </div>
-
-                    <div class="space-y-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="flex items-center text-xs font-bold text-brand-600 uppercase tracking-wider">
-                            <i data-lucide="arrow-up-right" class="w-4 h-4 mr-1.5"></i> 拡張性・保守性
-                        </div>
-                        <div class="text-sm font-bold text-slate-900">将来の教育機関向け拡張性</div>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            個人向け利用で検証後、将来的な学校向けライセンス・サーバー同期・教師ダッシュボード展開に対応できるようモジュール化設計を意識。
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. 未決定事項 (TBD) -->
-            <section id="tbd" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50/50 border-b border-slate-200 p-5 sm:p-6 flex items-center space-x-3">
-                    <div class="p-2 bg-amber-100 text-amber-700 rounded-lg">
-                        <i data-lucide="help-circle" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">5. 未決定事項・確認事項一覧 (TBD)</h3>
-                        <p class="text-xs text-slate-500">詳細設計・実装前に関係者間で決定・確定が必要な項目</p>
-                    </div>
+            <!-- 11. 実装優先順位 -->
+            <section id="roadmap" class="space-y-6 pb-12">
+                <div class="flex items-center gap-3 border-l-4 border-cyan-400 pl-4">
+                    <h3 class="text-xl font-bold text-white tracking-wide">11. 優先順位・実装方針</h3>
                 </div>
 
-                <div class="p-6 sm:p-8 space-y-4">
-                    <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start space-x-3">
-                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
-                        <div class="text-xs sm:text-sm text-amber-900 leading-relaxed">
-                            以下の項目は、次回設計レビュー時までに確認・取り決めを行う必要があります。
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-panel p-5 rounded-xl border-t-2 border-t-cyan-500">
+                        <span class="text-xs font-mono text-cyan-400 uppercase block mb-1">PHASE 1 (CORE)</span>
+                        <h4 class="text-sm font-bold text-white mb-2">基本コア機能</h4>
+                        <p class="text-xs text-slate-400">デッキ/問題CRUD、学習フロー、カード/問題分け、メモ保存、ローカルDB、バックアップ</p>
                     </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[600px]">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-700 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                                    <th class="py-2.5 px-3 w-20">ID</th>
-                                    <th class="py-2.5 px-3 w-36">対象項目</th>
-                                    <th class="py-2.5 px-3">現状と決定が必要な内容</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-200 text-xs sm:text-sm text-slate-700">
-                                <tr>
-                                    <td class="py-3 px-3 font-mono font-semibold text-amber-600">TBD-001</td>
-                                    <td class="py-3 px-3 font-bold text-slate-900">AI自動生成</td>
-                                    <td class="py-3 px-3">初稿仕様より除外決定。将来機能として別定義するか確定する。</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3 px-3 font-mono font-semibold text-amber-600">TBD-002</td>
-                                    <td class="py-3 px-3 font-bold text-slate-900">復習間隔ルール</td>
-                                    <td class="py-3 px-3">4段階評価（もう一度・難しい・普通・簡単）ごとの初期間隔および加算係数数式の確定。</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3 px-3 font-mono font-semibold text-amber-600">TBD-003</td>
-                                    <td class="py-3 px-3 font-bold text-slate-900">正答率集計の定義</td>
-                                    <td class="py-3 px-3">自己採点・評価結果をどう正解判定にマッピングするか。デッキ集計の平均算出計算式。</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3 px-3 font-mono font-semibold text-amber-600">TBD-007</td>
-                                    <td class="py-3 px-3 font-bold text-slate-900">削除時データ削除</td>
-                                    <td class="py-3 px-3">デッキや問題を削除した際、過去の解答メモや復習履歴データ、添付画像を物理削除するか論理削除か。</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-3 px-3 font-mono font-semibold text-amber-600">TBD-013</td>
-                                    <td class="py-3 px-3 font-bold text-slate-900">メディア欠損対応</td>
-                                    <td class="py-3 px-3">ローカル上の画像ファイルが手動移動・削除されファイルパスが切れた場合の表示・警告代替動作。</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="glass-panel p-5 rounded-xl border-t-2 border-t-purple-500">
+                        <span class="text-xs font-mono text-purple-400 uppercase block mb-1">PARALLEL</span>
+                        <h4 class="text-sm font-bold text-white mb-2">演出 & 実績</h4>
+                        <p class="text-xs text-slate-400">最重要要素として紙吹雪・サウンド演出、バッジ解除ロジックを初期段階から並行実装</p>
                     </div>
-                </div>
-            </section>
-
-            <!-- 6. スケジュール・体制 -->
-            <section id="schedule" class="scroll-mt-28 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50/50 border-b border-slate-200 p-5 sm:p-6 flex items-center space-x-3">
-                    <div class="p-2 bg-purple-100 text-purple-700 rounded-lg">
-                        <i data-lucide="calendar" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">6. 開発工程・変更管理方針</h3>
-                        <p class="text-xs text-slate-500">プロジェクト推進方針と管理ルール</p>
-                    </div>
-                </div>
-                <div class="p-6 sm:p-8 space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <div class="text-xs font-bold text-purple-600">PHASE 1</div>
-                            <div class="text-sm font-bold text-slate-900">基本機能実装</div>
-                            <p class="text-xs text-slate-600">デッキ・問題管理、学習フロー、記述式自己採点、思考メモ機能の構築。</p>
-                        </div>
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <div class="text-xs font-bold text-purple-600">PHASE 2</div>
-                            <div class="text-sm font-bold text-slate-900">演出・分析機能拡張</div>
-                            <p class="text-xs text-slate-600">間隔反復復習アルゴリズム、正答率自動集計、実績バッジ、演出エフェクトの実装。</p>
-                        </div>
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <div class="text-xs font-bold text-purple-600">PHASE 3</div>
-                            <div class="text-sm font-bold text-slate-900">信頼性・検証テスト</div>
-                            <p class="text-xs text-slate-600">インポートバリデーション検証、バックアップ復元テスト、最終レビュー。</p>
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-slate-100 rounded-lg text-xs text-slate-600 space-y-1">
-                        <div class="font-bold text-slate-800">【仕様変更管理ルール】</div>
-                        <p>要件定義完了後の機能変更および仕様追加が発生した場合は、本要件定義書（v1.0）の変更履歴を記録し、TBD事項の解消とともに版数更新を行います。</p>
+                    <div class="glass-panel p-5 rounded-xl border-t-2 border-t-slate-600 opacity-60">
+                        <span class="text-xs font-mono text-slate-500 uppercase block mb-1">FUTURE</span>
+                        <h4 class="text-sm font-bold text-slate-300 mb-2">拡張構想</h4>
+                        <p class="text-xs text-slate-400">教師用一括配布、学習データサーバー集約、AI問題生成などのクラウド連携</p>
                     </div>
                 </div>
             </section>
@@ -657,265 +689,137 @@
         </main>
     </div>
 
-    <!-- MAIN VIEW CONTAINER 2: GitHub 統合仕様書 (github) -->
-    <div id="view-github" class="view-container hidden">
-        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-            <div class="bg-indigo-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-300">Question-Creation 仕様書</span>
-                    <h2 class="text-2xl font-bold mt-1">GitHub 統合仕様書・ドキュメント</h2>
-                    <p class="text-xs text-indigo-200 mt-2">GitHubリポジトリ (kanakana893/Question-Creation) 用に最適化された統合仕様情報</p>
-                </div>
-                <div class="p-4 bg-indigo-800/80 rounded-xl border border-indigo-700 hidden sm:block">
-                    <i data-lucide="github" class="w-10 h-10 text-white"></i>
-                </div>
-            </div>
-
-            <!-- GitHub integrated document presentation -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-8">
-                <section class="border-b border-slate-200 pb-6">
-                    <h3 class="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
-                        <span class="text-indigo-600 font-mono">#</span> 1. アプリ概要・目的
-                    </h3>
-                    <p class="text-slate-700 text-sm leading-relaxed">
-                        ユーザーが独自の問題やデッキ（問題集）を作成・管理し、間隔反復（スペースド・レピティション）を用いた効率的な学習と、学習意欲を極限まで高める演出（ドパガキ用演出・実績機能）、さらに「なぜそう解答したか」の思考プロセスや計算の軌跡を記録・確認できるメモ機能によって、継続的な学習と効果的な弱点克服・記憶定着をサポートするアプリケーション。
-                    </p>
-                    
-                    <div class="mt-4 p-4 bg-indigo-50 rounded-lg border border-indigo-100 space-y-2">
-                        <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider">想定ターゲット層</h4>
-                        <ul class="list-disc list-inside text-xs text-slate-700 space-y-1">
-                            <li><strong>メインターゲット（一般家庭）：</strong>個人学習者、資格勉強をする社会人、計算問題で同じ間違いを繰り返したくない人、指導を行う保護者。</li>
-                            <li><strong>将来的な展開目標（学校法人）：</strong>教師が一括でデッキを作成し、生徒に配布・学習進捗を管理できる教育機関向けライセンス展開。</li>
-                        </ul>
-                    </div>
-                </section>
-
-                <section class="border-b border-slate-200 pb-6 space-y-6">
-                    <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <span class="text-indigo-600 font-mono">#</span> 2. 主要機能詳細仕様
-                    </h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-                                <i data-lucide="folder" class="w-4 h-4 text-indigo-600"></i>
-                                2.1 デッキ & 問題管理
-                            </h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                デッキ（問題集）作成・編集・削除、一問一答・択一・複数選択・記述式問題登録、ローカル画像添付および参考URL機能。
-                            </p>
-                        </div>
-
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-                                <i data-lucide="edit-3" class="w-4 h-4 text-indigo-600"></i>
-                                2.2 思考メモ & 手書き記録
-                            </h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                テキスト＋マウス/タッチ手書きフリーハンド描画による解答プロセス記録。過去のミス原因メモを参照できる履歴閲覧。
-                            </p>
-                        </div>
-
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-indigo-600"></i>
-                                2.3 記述式 & 柔軟な採点
-                            </h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                単語完全一致判定およびニュアンス合致時の「大体あっていればOK」手動自己採点ハイブリッド方式。
-                            </p>
-                        </div>
-
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-2">
-                                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
-                                2.4 演出 & 実績 (ゲーミフィケーション)
-                            </h4>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                正解・高評価時の紙吹雪＆サウンド演出、連続学習日数は累計マスターに応じた実績バッジ解除機能。
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h3 class="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
-                        <span class="text-indigo-600 font-mono">#</span> 3. 利用フロー & 画面レイアウト案
-                    </h3>
-                    <ol class="list-decimal list-inside text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <li><strong>問題・デッキ作成：</strong>設定入力、画像添付および外部URL紐付け。</li>
-                        <li><strong>学習セッション：</strong>未復習問題の抽出、出題順（ランダム/登録順）の指定。</li>
-                        <li><strong>解答・メモ記入：</strong>フリーハンド計算式記入・思考プロセスの即時保管。</li>
-                        <li><strong>自己評価・採点：</strong>4段階評価（もう一度・難しい・普通・簡単）＋記述自己採点。</li>
-                        <li><strong>分析・共有：</strong>正答率推移の確認、外部ファイルエクスポート/インポート。</li>
-                    </ol>
-                </section>
-            </div>
-        </main>
-    </div>
-
-    <!-- MAIN VIEW CONTAINER 3: GitHub用コード出力 (export) -->
-    <div id="view-export" class="view-container hidden">
-        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-            <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <div class="inline-flex items-center space-x-2 text-xs font-semibold text-brand-400 mb-1">
-                            <i data-lucide="file-code" class="w-4 h-4"></i>
-                            <span>GitHub README.md / Wiki 貼り付け用</span>
-                        </div>
-                        <h2 class="text-2xl font-bold">GitHub用 Markdown コード出力</h2>
-                        <p class="text-xs text-slate-400 mt-1">以下のコードブロックをコピーして GitHub の `README.md` や Issue、Wiki にそのまま貼り付けできます。</p>
-                    </div>
-                    <button onclick="copyCurrentMarkdown()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg text-xs font-bold shadow-lg transition-all flex items-center justify-center space-x-2 shrink-0">
-                        <i data-lucide="copy" class="w-4 h-4"></i>
-                        <span>Markdownをコピー</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Code Output Display -->
-            <div class="bg-slate-900 rounded-xl border border-slate-800 shadow-xl overflow-hidden">
-                <div class="bg-slate-800/80 px-4 py-3 border-b border-slate-700 flex items-center justify-between text-xs text-slate-300">
-                    <span class="font-mono font-medium flex items-center">
-                        <i data-lucide="file-text" class="w-3.5 h-3.5 mr-2 text-brand-400"></i>
-                        README.md / SYSTEM_REQUIREMENTS.md
-                    </span>
-                    <span class="text-[10px] text-slate-400">標準 Markdown 形式</span>
-                </div>
-                <div class="p-4 bg-slate-950 overflow-x-auto">
-                    <pre id="markdown-output-text" class="font-mono text-xs text-slate-300 leading-relaxed whitespace-pre selection:bg-brand-600 selection:text-white"># 問題作成・学習アプリ システム要件定義書 & 仕様書
-
-## 1. アプリ概要・目的
-利用者が独自の問題集（デッキ）を作成・管理し、**間隔反復（スペースド・レピティション）**を用いた効率的な記憶定着を図るためのデスクトップ学習アプリケーションです。
-
-### 想定ターゲット層
-- **個人学習者・受験生**: 資格試験対策、ケアレスミス防止、反復学習
-- **教育機関・指導者**: デッキの一括作成・配布および進捗管理
-
----
-
-## 2. システム基本構成
-- **形態**: デスクアトップアプリケーション（スタンドアロン）
-- **対象OS**: Windows 10 / Windows 11
-- **データ保存**: 完全ローカルストレージ（画像・手書きデータはパス参照方式）
-
----
-
-## 3. 主要機能要件
-
-| 要件ID | 機能名 | 仕様詳細 | ステータス |
-| :--- | :--- | :--- | :---: |
-| **FR-001** | デッキ作成 | 利用者は新しいデッキを作成し、デッキ名および説明を設定できる。 | 確定 |
-| **FR-004** | 問題作成 | 問題文、解答、選択肢および画像を登録・管理。 | 確定 |
-| **FR-014** | 記述文字入力解答 | キーワード完全一致判定 ＋「大体あっていればOK」の自己採点。 | 最新更新 |
-| **FR-020** | 思考メモ・手書き記録 | テキストおよびマウス/タッチ手書きで計算・思考過程を保存。 | 最新更新 |
-| **FR-023** | 間隔反復復習管理 | 4段階自己評価に基づく次回評価日時の自動算出。 | 確定 |
-| **FR-029** | 正答率自動集計 | 問題単体およびデッキ全体の累計正答率を自動集計。 | 確定 |
-| **FR-035** | ローカルパス参照 | 画像や手書きメモデータはDB外の固有フォルダに保存・パス参照。 | 最新更新 |
-| **FR-042** | 演出・実績通知 | 正解・高評価時のエフェクト演出および実績解除バッジ。 | 確定 |
-
----
-
-## 4. 業務ワークフロー (To-Be)
-1. **デッキ・問題登録**（手動入力・画像添付・参考URL設定）
-2. **学習セッション開始**（条件・未学習・復習期日問題の抽出）
-3. **解答・メモ記録**（手書きフリーハンド・思考プロセスの保管）
-4. **自己評価・採点**（4段階評価 ＆ 記述自己採点）
-5. **復習 ＆ データ分析**（正答率・理解度推移のグラフ確認）
-6. **共有・バックアップ**（デッキのファイル出力・安全保管）
-
----
-
-## 5. 未決定・協議事項 (TBD)
-- `TBD-001` AI自動問題生成（初稿仕様より除外、将来検討）
-- `TBD-002` 復習間隔ルール（評価毎の加算係数数式の確定）
-- `TBD-007` データ削除時（物理削除 / 論理削除の扱い）
-- `TBD-013` メディア欠損時（ローカル画像パス断絶時の警告代替表示）
-
----
-© 2026 学習アプリ開発プロジェクト</pre>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Global Footer -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div>問題作成・学習アプリ システム要件定義書 & GitHub統合ポータル</div>
-            <div>© 2026 学習アプリ開発プロジェクト. All rights reserved.</div>
-        </div>
-    </footer>
-
-    <!-- Logic Script -->
+    <!-- JavaScript Data & Logic -->
     <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
+        // 機能要件 (FR-001 ~ FR-048) データ構造
+        const functionalRequirements = [
+            { id: "FR-001", name: "デッキ作成", cat: "デッキ", desc: "新規デッキ作成、デッキ名・説明設定" },
+            { id: "FR-002", name: "デッキ編集・削除", cat: "デッキ", desc: "デッキ情報更新、削除（配下データ整合性維持）" },
+            { id: "FR-003", name: "デッキ内問題一覧", cat: "デッキ", desc: "指定デッキの所属問題一覧表示" },
+            { id: "FR-004", name: "作成開始時の形式選択", cat: "問題", desc: "作成開始時に「カード形式」または「問題形式」を選択" },
+            { id: "FR-005", name: "問題編集・削除", cat: "問題", desc: "問題修正・削除（関連学習履歴・添付ファイルも削除）" },
+            { id: "FR-006", name: "問題の追加・移動", cat: "問題", desc: "1問題1デッキ所属原則での別デッキ移動" },
+            { id: "FR-007", name: "画像添付", cat: "問題", desc: "問題への画像添付および学習画面での表示" },
+            { id: "FR-008", name: "参考URL", cat: "問題", desc: "問題へのURL登録および外部ブラウザ起動" },
+            { id: "FR-009", name: "キーワード検索", cat: "問題", desc: "デッキ、問題、タグの横断部分一致検索" },
+            { id: "FR-010", name: "一問一答", cat: "問題", desc: "問題文と解答による標準的一問一答" },
+            { id: "FR-011", name: "画像付き問題", cat: "問題", desc: "画像を含む視覚的問題の出題" },
+            { id: "FR-012", name: "択一選択問題", cat: "問題", desc: "複数選択肢から1つを選ぶ形式" },
+            { id: "FR-013", name: "複数選択問題", cat: "問題", desc: "複数該当選択肢の回答（部分点なし、完答正解）" },
+            { id: "FR-014", name: "文字入力解答", cat: "問題", desc: "完全一致型（複数正解可）または自己採点による文字入力" },
+            { id: "FR-015", name: "学習開始", cat: "学習", desc: "デッキ選択による学習セッションの開始" },
+            { id: "FR-016", name: "問題の逐次表示", cat: "学習", desc: "1問ずつ表示し解答は隠す。操作で開示" },
+            { id: "FR-017", name: "問題間移動", cat: "学習", desc: "学習中の前後の問題への自由移動" },
+            { id: "FR-018", name: "学習対象の絞り込み", cat: "学習", desc: "未学習問題のみ / 全問題の絞り込み出題" },
+            { id: "FR-019", name: "途中終了・進捗保存", cat: "学習", desc: "途中終了時の未回答状態保持と再開処理" },
+            { id: "FR-020", name: "テキストメモ", cat: "学習", desc: "解答時の思考・計算過程のテキスト記録" },
+            { id: "FR-021", name: "手書きメモ", cat: "学習", desc: "マウス/タッチによるフリーハンド手書き記録" },
+            { id: "FR-022", name: "過去メモ表示", cat: "学習", desc: "最大3回分のメモ保持と4回目以降の最古上書き" },
+            { id: "FR-023", name: "カード形式の自己評価", cat: "復習", desc: "裏面確認後の「もう一度／正解」2段階評価" },
+            { id: "FR-024", name: "カード形式の復習日時設定", cat: "復習", desc: "1分, 10分, 1日, 3日, 7日, 14日, 2倍の復習計算" },
+            { id: "FR-025", name: "復習対象一覧", cat: "復習", desc: "復習期日到来カードの優先出題" },
+            { id: "FR-026", name: "カード復習状態表示", cat: "復習", desc: "次回復習タイミングおよび学習段階の表示" },
+            { id: "FR-027", name: "学習履歴", cat: "学習", desc: "日時および評価ログの記録と確認" },
+            { id: "FR-028", name: "進捗表示", cat: "学習", desc: "学習数、デッキ状況、未学習/復習待ち統計" },
+            { id: "FR-029", name: "問題ごとの正答率", cat: "学習", desc: "100%方式での問題単位正解率算出" },
+            { id: "FR-030", name: "デッキごとの正答率", cat: "学習", desc: "100%方式でのデッキ単位正解率算出" },
+            { id: "FR-031", name: "デッキエクスポート", cat: "データ", desc: "（今回の対象外）" },
+            { id: "FR-032", name: "デッキインポート", cat: "データ", desc: "画像/セーブデータ読み込みのみ対象" },
+            { id: "FR-033", name: "インポート検証", cat: "データ", desc: "不正ファイルの検証と取り込み拒否" },
+            { id: "FR-034", name: "ローカル保存", cat: "データ", desc: "PC内完全ローカル保存（外部通信なし）" },
+            { id: "FR-035", name: "メディアファイル保存", cat: "データ", desc: "画像/手書きをローカルフォルダ保存、DBパス保持" },
+            { id: "FR-036", name: "バックアップ", cat: "データ", desc: "問題・履歴・画像・実績等の統合バックアップ" },
+            { id: "FR-037", name: "復元", cat: "データ", desc: "バックアップからの上書きデータ復元" },
+            { id: "FR-038", name: "全データ初期化", cat: "データ", desc: "事前確認ダイアログ付きの全データリセット" },
+            { id: "FR-039", name: "復習設定", cat: "復習", desc: "設定画面からの復習間隔カスタマイズ" },
+            { id: "FR-040", name: "出題順序設定", cat: "学習", desc: "登録順 / ランダム出題の切り替え" },
+            { id: "FR-041", name: "データ操作設定", cat: "データ", desc: "履歴クリアやデータ管理操作（設定エクスポートなし）" },
+            { id: "FR-042", name: "学習演出", cat: "演出", desc: "正解時の紙吹雪・サウンド演出（ON/OFF設定可）" },
+            { id: "FR-043", name: "実績・バッジ", cat: "演出", desc: "条件達成時の実績解除と演出通知" },
+            { id: "FR-044", name: "実績条件", cat: "演出", desc: "7日連続学習、累計100問正解等の判定（暦日単位）" },
+            { id: "FR-045", name: "カード形式の作成", cat: "問題", desc: "表面・裏面の登録編集UI" },
+            { id: "FR-046", name: "問題形式の作成", cat: "問題", desc: "問題文・選択肢・正解・解説の登録編集UI" },
+            { id: "FR-047", name: "学習ロジックの分離", cat: "学習", desc: "カード形式（間隔反復）と問題形式（通常演習）の分離" },
+            { id: "FR-048", name: "固定スケジュール計算", cat: "復習", desc: "固定間隔スケジュールによる復習計算の実行" }
+        ];
 
-        // Main Tab Switcher function
-        function switchMainTab(tabKey) {
-            // Hide all view containers
-            const views = document.querySelectorAll('.view-container');
-            views.forEach(view => view.classList.add('hidden'));
+        // アイコン初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderFRs(functionalRequirements);
 
-            // Show selected view container
-            const targetView = document.getElementById('view-' + tabKey);
-            if (targetView) {
-                targetView.classList.remove('hidden');
-            }
+            // モバイルメニュー制御
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
 
-            // Update Tab Button Styles (Desktop & Mobile)
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
 
-            const desktopBtn = document.getElementById('tab-btn-' + tabKey);
-            const mobileBtn = document.getElementById('tab-btn-' + tabKey + '-m');
-            if (desktopBtn) desktopBtn.classList.add('active');
-            if (mobileBtn) mobileBtn.classList.add('active');
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        });
 
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        // 機能要件レンダリング
+        function renderFRs(items) {
+            const container = document.getElementById('fr-container');
+            container.innerHTML = '';
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel p-3.5 rounded-xl border border-cyber-border/70 hover:border-cyber-cyan/50 transition-all flex flex-col justify-between';
+                
+                let badgeColor = 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                if(item.cat === '復習') badgeColor = 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
+                if(item.cat === '演出') badgeColor = 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+                if(item.cat === 'データ') badgeColor = 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-mono text-xs font-bold text-white px-2 py-0.5 bg-cyber-surface rounded border border-cyber-border">${item.id}</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${badgeColor}">${item.cat}</span>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-100 mb-1">${item.name}</h4>
+                        <p class="text-[11px] text-slate-400 leading-snug">${item.desc}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        // Copy Current Markdown functionality
-        function copyCurrentMarkdown() {
-            const markdownContent = document.getElementById('markdown-output-text').innerText;
-            
-            // Clipboard fallback logic
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(markdownContent).then(showToast).catch(() => {
-                    execCopyCommand(markdownContent);
-                });
-            } else {
-                execCopyCommand(markdownContent);
-            }
+        // フィルタリング処理
+        const searchInput = document.getElementById('fr-search');
+        const filterSelect = document.getElementById('fr-filter');
+
+        function filterFRs() {
+            const query = searchInput.value.toLowerCase();
+            const category = filterSelect.value;
+
+            const filtered = functionalRequirements.filter(item => {
+                const matchesQuery = item.id.toLowerCase().includes(query) || 
+                                     item.name.toLowerCase().includes(query) || 
+                                     item.desc.toLowerCase().includes(query);
+                const matchesCat = category === 'ALL' || item.cat === category;
+                return matchesQuery && matchesCat;
+            });
+
+            renderFRs(filtered);
         }
 
-        function execCopyCommand(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                showToast();
-            } catch (err) {
-                console.error('Copy failed', err);
-            }
-            document.body.removeChild(textarea);
-        }
+        searchInput.addEventListener('input', filterFRs);
+        filterSelect.addEventListener('change', filterFRs);
 
-        function showToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-            }, 3000);
-        }
+        // サイドバー検索連携
+        document.getElementById('quick-search').addEventListener('input', (e) => {
+            const val = e.target.value;
+            searchInput.value = val;
+            filterFRs();
+        });
     </script>
 </body>
 </html>
